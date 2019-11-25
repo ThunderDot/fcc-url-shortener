@@ -48,14 +48,12 @@ app.get("/", function(req, res) {
 // api endpoint short url
 app.post("/api/shorturl/new", function(req, res) {
   var validUrl = req.body.url.replace(/(http:\/\/)|(https:\/\/)/, "");
-  console.log(validUrl);
 
   dns.lookup(validUrl, function(err, address) {
     if (err) return res.json({ error: "invalid URL" });
 
     Link.countDocuments(function(err, count) {
       if (err) return console.error(err);
-      console.log("there is %d documents", count);
 
       var newLink = new Link({
         original_url: req.body.url,
@@ -81,7 +79,9 @@ app.get("/api/shorturl/:number", function(req, res) {
   shortUrlFilter.test(shortcut)
     ? Link.findOne({ short_url: shortcut }, function(err, data) {
         if (err) return console.error(err);
-        data ? res.redirect(data.original_url) : res.send("404: SHORTCUT NOT FOUND");
+        data
+          ? res.redirect(data.original_url)
+          : res.send("404: SHORTCUT NOT FOUND");
       })
     : res.send("INVALID SHORCUT SINTAX");
 });
